@@ -52,6 +52,9 @@ mod test {
     fn test_largest_integer_scale() {
         assert_lrg!({0, 1}, {1, 1} => None);
         assert_lrg!({1, 0}, {1, 1} => None);
+        assert_lrg!({-1, 1}, {1, 1} => None);
+        assert_lrg!({1, -1}, {1, 1} => None);
+
         assert_lrg!({1, 1}, {-1, 1} => None);
         assert_lrg!({1, 1}, {1, -1} => None);
 
