@@ -1,0 +1,10 @@
+[package]
+name = "integer-viewport"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+godot = { version = "^0.5" }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
