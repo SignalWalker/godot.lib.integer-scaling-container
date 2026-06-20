@@ -5,7 +5,6 @@ use godot::{
         notify::ContainerNotification,
         viewport::DefaultCanvasItemTextureFilter,
     },
-    global::godot_error,
     obj::{Base, WithBaseField, WithUserSignals},
     register::{
         GodotClass, godot_api,
@@ -19,13 +18,17 @@ use godot::{
 pub struct IntegerScalingSubViewportContainer {
     base: Base<SubViewportContainer>,
 
+    #[var(
+        set,
+        hint = LINK,
+        hint_string = "suffix:px"
+    )]
     #[export]
-    #[var(set)]
     base_size: Vector2i,
 }
 
 impl IntegerScalingSubViewportContainer {
-    fn connect_child_entered(&mut self) -> ConnectHandle {
+    fn connect_signals(&mut self) -> ConnectHandle {
         self.signals()
             .child_entered_tree()
             .connect_self(Self::on_child_entered)
@@ -41,11 +44,11 @@ impl IntegerScalingSubViewportContainer {
         self.base_mut().set_stretch(true);
         let within = self.base().get_size().cast_int();
         let Some(scale) = crate::get_largest_integer_scale(self.base_size, within) else {
-            godot_error!(
-                "[IntegerViewport] could not get scale factor, base_size: {}, within: {}, container: {}",
-                self.base_size,
-                within,
-                self.to_gd()
+            tracing::error!(
+                base_size = %self.base_size,
+                %within,
+                container = %self.to_gd(),
+                "could not get scale factor",
             );
             return;
         };
@@ -79,7 +82,7 @@ impl ISubViewportContainer for IntegerScalingSubViewportContainer {
 
     fn enter_tree(&mut self) {
         self.base_mut().set_stretch(true);
-        self.connect_child_entered();
+        self.connect_signals();
     }
 
     fn on_validate_property(&self, info: &mut PropertyInfo) {
@@ -93,8 +96,9 @@ impl ISubViewportContainer for IntegerScalingSubViewportContainer {
 
     fn on_notification(&mut self, notif: ContainerNotification) {
         match notif {
+            // necessary because this is an @tool class and we connect a signal when we enter_tree
             ContainerNotification::EXTENSION_RELOADED => {
-                self.connect_child_entered();
+                self.connect_signals();
             }
             ContainerNotification::RESIZED => {
                 self.update_scale();
