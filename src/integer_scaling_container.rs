@@ -14,10 +14,15 @@ use godot::{
     },
 };
 
+/// A [Container] that resizes its child elements to the largest integer multiple of a minimum size
+/// that fits within the container.
 #[derive(GodotClass)]
 #[class(tool, base = Container)]
 pub struct IntegerScalingContainer {
     base: Base<Container>,
+
+    /// The minimum element size.
+    /// Both components must be greater than 0.
     #[var(
         set,
         hint = LINK,
