@@ -7,6 +7,3 @@ edition = "2024"
 godot = { version = "^0.5" }
 
 tracing = "^0.1"
-
-[lib]
-crate-type = ["cdylib", "rlib"]
