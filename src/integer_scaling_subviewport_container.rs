@@ -43,17 +43,13 @@ impl IntegerScalingSubViewportContainer {
     fn update_scale(&mut self) {
         self.base_mut().set_stretch(true);
         let within = self.base().get_size().cast_int();
-        let Some(scale) = crate::get_largest_integer_scale(self.base_size, within) else {
-            tracing::error!(
-                base_size = %self.base_size,
-                %within,
-                container = %self.to_gd(),
-                "could not get scale factor",
-            );
-            return;
-        };
-        self.base_mut().set_stretch_shrink(scale as i32);
-        self.base_mut().queue_sort();
+        let scale = crate::get_largest_integer_scale(self.base_size, within);
+        if let Some(scale) = scale
+            && scale > 0
+        {
+            self.base_mut().set_stretch_shrink(scale as i32);
+            self.base_mut().queue_sort();
+        }
     }
 }
 
