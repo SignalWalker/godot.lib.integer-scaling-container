@@ -2,9 +2,6 @@ use std::num::NonZero;
 
 use godot::prelude::Vector2i;
 
-mod ext;
-pub use ext::*;
-
 mod integer_scaling_container;
 pub use integer_scaling_container::*;
 
